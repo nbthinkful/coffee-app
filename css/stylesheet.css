@@ -71,6 +71,10 @@ footer {
 	background: #CCCCCC;
 }
 
+#results {
+	height:500px;
+}
+
 .search-area {
 	width: 75%;
 	margin: 100px auto 0 auto;

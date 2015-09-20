@@ -34,9 +34,11 @@
 			</div>
 
 			<div class="search-area">
-				<h1>Find a coffee shop near you</h1>
-				<input type="text">
-				<button>Go</button>
+				<form name="coffeeFinder" onsubmit="search();return false">
+					<h1>Find a coffee shop near you</h1>
+					<input type="text" id="place"/>
+					<button>Go</button>
+				</form>
 			</div>
 
 			<div class="results-container">

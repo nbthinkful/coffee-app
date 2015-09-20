@@ -1,40 +1,50 @@
-$(document).ready(function() {
-
-	$('button').click(function(event) {
-		$('#results').html('');
-		var userSearch = $('input[type="text"]').val();
-	})
-
-});
-
 var map;
 var service;
 var infowindow;
 
-function initialize() {
-  var pyrmont = new google.maps.LatLng(-33.8665433,151.1956316);
+function search() {
+  var place = $('#place').val();
 
-  map = new google.maps.Map(document.getElementById('results'), {
-      center: pyrmont,
-      zoom: 15
+  var geocoder = new google.maps.Geocoder();
+  geocoder.geocode({
+      'address': place
+  }, function (results, status) {
+    var mapCanvas = document.getElementById('results');
+    var map = new google.maps.Map(mapCanvas, {
+      zoom: 12,
+      center: results[0].geometry.location,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
     });
 
-  var request = {
-    location: pyrmont,
-    radius: '500',
-    query: userSearch
-  };
+    service = new google.maps.places.PlacesService(map);
 
-  service = new google.maps.places.PlacesService(map);
-  service.textSearch(request, callback);
-}
+    service.nearbySearch({
+      location: results[0].geometry.location,
+      radius: '500',
+      rankBy: google.maps.places.RankBy.PROMINENCE,
+      types: ['cafe']
+    }, function (results, status) {
 
-function callback(results, status) {
-  if (status == google.maps.places.PlacesServiceStatus.OK) {
-    for (var i = 0; i < results.length; i++) {
-      var place = results[i];
-      createMarker(results[i]);
-      console.log(results[i])
-    }
-  }
-}
+      if (results == null || results.length == 0) {
+        return;
+      }
+
+      var bounds = new google.maps.LatLngBounds();
+
+      for (var i=0; i<results.length; i++) {
+        var resultMarker = results[i];
+        var resultLocation = resultMarker.geometry.location;
+
+        bounds.extend(resultLocation);
+        var marker = new google.maps.Marker({
+          position: resultLocation,
+          map:map,
+          title: resultMarker.name
+        });
+      };
+
+      map.fitBounds(bounds);
+      map.panToBounds(bounds);
+    });
+  });
+};
